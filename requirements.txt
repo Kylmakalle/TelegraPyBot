@@ -1,0 +1,3 @@
+newspaper3k
+pyTelegramBotAPI
+git+https://github.com/mercuree/html-telegraph-poster.git

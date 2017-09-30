@@ -1,5 +1,5 @@
 from html_telegraph_poster import TelegraphPoster
-from newspaper import Article
+from newspaper import Article, Config as NewspaperConfig
 from xml.etree import ElementTree
 import telebot
 from postercredentials import token, access_token
@@ -13,10 +13,16 @@ linktrigger = ['.ru', '.com', '.net', '.org']
 
 def page_create(message):
     try:
-        article = Article(message.text)
+        conf = NewspaperConfig()
+        # use russian language by default ;) (when proper language was not detected)
+        conf._language = 'ru'
+        article = Article(message.text, config=conf, keep_article_html=True)
         article.download()
         article.parse()
-        html = str(ElementTree.tostring(article.clean_top_node), 'utf-8')
+        if len(article.text) > 0:
+            html = article.article_html
+        else:
+            html = str(ElementTree.tostring(article.clean_top_node), 'utf-8')
         bot.send_message(message.chat.id, t.post(title=article.title,
                                                  author='@TelegraPyBot',
                                                  author_url='https://t.me/TelegraPyBot',
